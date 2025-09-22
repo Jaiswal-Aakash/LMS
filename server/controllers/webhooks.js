@@ -2,33 +2,15 @@ import { Webhook } from "svix";
 import User from "../models/User.js";
 
 //API Controller to handle  Clerk User wwith DB
-export const clerkWebhook = async (req, res) => {
+export const clerkWebhooks = async (req, res) => {
     try {
-        console.log('Received webhook:', {
-            headers: req.headers,
-            body: req.body
-        });
-
-        if (!process.env.CLERK_WEBHOOK_SECRET) {
-            throw new Error('CLERK_WEBHOOK_SECRET is not set');
-        }
-
         const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-
-        try {
-            await wh.verify(JSON.stringify(req.body), {
-                "svix-id": req.headers['svix-id'],
-                "svix-timestamp": req.headers['svix-timestamp'],
-                "svix-signature": req.headers['svix-signature']
-            });
-        } catch (error) {
-            console.error('Webhook verification failed:', error);
-            return res.status(400).json({ error: 'Webhook verification failed' });
-        }
-
+        await wh.verify(JSON.stringify(req.body), {
+            "svix-id": req.headers['svix-id'],
+            "svix-timestamp": req.headers['svix-timestamp'],
+            "svix-signature": req.headers['svix-signature']
+        });
         const { data, type } = req.body;
-        console.log('Webhook type:', type);
-        console.log('Webhook data:', data);
         switch (type) {
             case 'user.created': {
                 const userData = {
