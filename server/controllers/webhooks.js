@@ -17,11 +17,16 @@ export const clerkWebhook = async (req, res) => {
                     _id: data.id,
                     email: data.email_addresses[0].email_address,
                     name: data.first_name + " " + data.last_name,
-                    imageUrl: data.image_url,
-
+                    imageURL: data.image_url,
                 }
-                await User.create(userData);
-                res.status(200).json({ message: "User created successfully" });
+                try {
+                    const user = await User.create(userData);
+                    console.log("User created:", user);
+                    res.status(200).json({ message: "User created successfully" });
+                } catch (error) {
+                    console.error("Error creating user:", error);
+                    res.status(500).json({ error: error.message });
+                }
                 break;
             }
             case 'user.updated': {
