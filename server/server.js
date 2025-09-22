@@ -2,17 +2,18 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import { connectDB } from './configs/mongodb.js';
+
 import { clerkWebhooks } from './controllers/webhooks.js';
-
-
-// Initialize Express app
-const app = express();
 
 // Connect to MongoDB
 connectDB();
 
+// Initialize Express app
+const app = express();
+
 // Middleware
 app.use(cors());
+
 
 
 // routes
