@@ -4,6 +4,13 @@ import User from "../models/User.js";
 //API Controller to handle  Clerk User wwith DB
 export const clerkWebhooks = async (req, res) => {
     try {
+        // Debug: Check if webhook secret exists
+        if (!process.env.CLERK_WEBHOOK_SECRET) {
+            console.log("ERROR: CLERK_WEBHOOK_SECRET is not defined");
+            return res.status(500).json({ message: "Webhook secret not configured" });
+        }
+        
+        console.log("Webhook secret exists:", process.env.CLERK_WEBHOOK_SECRET.substring(0, 10) + "...");
         const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
         await wh.verify(JSON.stringify(req.body), {
             "svix-id": req.headers['svix-id'],
@@ -17,7 +24,7 @@ export const clerkWebhooks = async (req, res) => {
                     _id: data.id,
                     email: data.email_addresses[0].email_address,
                     name: data.first_name + " " + data.last_name,
-                    imageUrl: data.image_url,
+                    imageURL: data.image_url,
 
                 }
                 await User.create(userData);
@@ -28,7 +35,7 @@ export const clerkWebhooks = async (req, res) => {
                 const userData = {
                     email: data.email_addresses[0].email_address,
                     name: data.first_name + " " + data.last_name,
-                    imageUrl: data.image_url,
+                    imageURL: data.image_url,
 
                 }
                 await User.findByIdAndUpdate(data.id, userData);
