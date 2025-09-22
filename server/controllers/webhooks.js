@@ -4,29 +4,42 @@ import User from "../models/User.js";
 //API Controller to handle  Clerk User wwith DB
 export const clerkWebhook = async (req, res) => {
     try {
-        const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-        await wh.verify(JSON.stringify(req.body), {
-            "svix-id": req.headers['svix-id'],
-            "svix-timestamp": req.headers['svix-timestamp'],
-            "svix-signature": req.headers['svix-signature']
+        console.log('Received webhook:', {
+            headers: req.headers,
+            body: req.body
         });
+
+        if (!process.env.CLERK_WEBHOOK_SECRET) {
+            throw new Error('CLERK_WEBHOOK_SECRET is not set');
+        }
+
+        const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+
+        try {
+            await wh.verify(JSON.stringify(req.body), {
+                "svix-id": req.headers['svix-id'],
+                "svix-timestamp": req.headers['svix-timestamp'],
+                "svix-signature": req.headers['svix-signature']
+            });
+        } catch (error) {
+            console.error('Webhook verification failed:', error);
+            return res.status(400).json({ error: 'Webhook verification failed' });
+        }
+
         const { data, type } = req.body;
+        console.log('Webhook type:', type);
+        console.log('Webhook data:', data);
         switch (type) {
             case 'user.created': {
                 const userData = {
                     _id: data.id,
                     email: data.email_addresses[0].email_address,
                     name: data.first_name + " " + data.last_name,
-                    imageURL: data.image_url,
+                    imageUrl: data.image_url,
+
                 }
-                try {
-                    const user = await User.create(userData);
-                    console.log("User created:", user);
-                    res.status(200).json({ message: "User created successfully" });
-                } catch (error) {
-                    console.error("Error creating user:", error);
-                    res.status(500).json({ error: error.message });
-                }
+                await User.create(userData);
+                res.status(200).json({ message: "User created successfully" });
                 break;
             }
             case 'user.updated': {
