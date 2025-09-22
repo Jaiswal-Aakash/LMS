@@ -1,0 +1,46 @@
+client packages -
+react-router-dom
+react-youtube
+uniqid
+quill
+humanize-duration 
+rc-progress 
+react-simple-star-rating
+
+
+tailwind setup - 
+npm install -D tailwindcss@3 postcss autoprefixer
+npx tailwindcss init -p
+
+content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+components/Student - 11 components
+components/educator - 3 components
+
+pages/student - 5 components
+pages/educator - 5 components
+
+color
+sky-200
+
+
+
+server packages -
+
+express,
+nodemon,
+dotenv,
+cors,
+mongoose,
+cloudinary,
+multer,
+stripe,
+svix@1.42.0,
+@clerk/express
