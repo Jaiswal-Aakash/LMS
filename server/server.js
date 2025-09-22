@@ -20,6 +20,18 @@ app.use(cors());
 app.get('/', (req, res) => {
     res.json({ message: "Welcome to the LMS API" });
 })
+
+// Debug endpoint to check environment variables
+app.get('/debug', (req, res) => {
+    res.json({
+        message: "Environment Debug",
+        CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET ? 
+            `Set (length: ${process.env.CLERK_WEBHOOK_SECRET.length})` : "Not set",
+        MONGODB_URI: process.env.MONGODB_URI ? "Set" : "Not set",
+        NODE_ENV: process.env.NODE_ENV || "Not set"
+    });
+})
+
 app.post('/clerk', express.json(), clerkWebhooks)
 
 
